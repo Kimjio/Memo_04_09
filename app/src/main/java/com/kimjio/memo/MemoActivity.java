@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -11,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
 import com.kimjio.memo.databinding.MemoActivityBinding;
+
+import java.util.Date;
 
 public class MemoActivity extends AppCompatActivity {
 
@@ -22,13 +25,12 @@ public class MemoActivity extends AppCompatActivity {
     private MemoDBHelper dbHelper;
     private Memo target = null;
     private int targetPosition;
-    private MenuItem deleteItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.memo_activity);
-        dbHelper = new MemoDBHelper(this, MemoDBHelper.TABLE, null, 2);
+        dbHelper = new MemoDBHelper(this, MemoDBHelper.TABLE, null, 1);
         setSupportActionBar(binding.appBarLayout.appBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -41,15 +43,12 @@ public class MemoActivity extends AppCompatActivity {
                 binding.memoInputText.setText(target.getContent());
             }
         }
-
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_memo, menu);
-        deleteItem = menu.getItem(1);
-        deleteItem.setEnabled(target != null);
+        menu.getItem(1).setEnabled(target != null);
         return true;
     }
 
@@ -74,16 +73,36 @@ public class MemoActivity extends AppCompatActivity {
     private void saveMemo() {
         Editable title = binding.titleInputText.getText();
         Editable content = binding.memoInputText.getText();
+        if (TextUtils.isEmpty(title)) {
+            binding.titleInputLayout.setError(getString(R.string.error_empty));
+            binding.titleInputText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (!TextUtils.isEmpty(s))
+                        binding.titleInputLayout.setError(null);
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+            return;
+        }
         String type;
 
         if (title == null || content == null) return;
-        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(content)) return;
 
         if (target == null) {
             dbHelper.insert(new Memo(title.toString(), content.toString()));
             type = TYPE_SAVE;
         } else {
-            dbHelper.update(new Memo(target.getId(), title.toString(), content.toString(), target.getCreated()));
+            dbHelper.update(new Memo(target.getId(), title.toString(), content.toString(), new Date()));
             type = TYPE_UPDATE;
         }
 

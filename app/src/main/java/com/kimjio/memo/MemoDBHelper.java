@@ -49,6 +49,7 @@ public class MemoDBHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("title", memo.getTitle());
         values.put("content", memo.getContent());
+        values.put("created", formatDate(memo.getCreated()));
         return db.update(TABLE, values, "id=?", new String[]{String.valueOf(memo.getId())});
     }
 
@@ -105,5 +106,10 @@ public class MemoDBHelper extends SQLiteOpenHelper {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private String formatDate(Date date) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        return format.format(date);
     }
 }

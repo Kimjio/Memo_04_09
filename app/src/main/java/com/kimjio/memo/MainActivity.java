@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity);
-        dbHelper = new MemoDBHelper(this, MemoDBHelper.TABLE, null, 2);
+        dbHelper = new MemoDBHelper(this, MemoDBHelper.TABLE, null, 1);
         setSupportActionBar(binding.appBarLayout.appBar);
         binding.recycler.setAdapter(memoAdapter = new MemoAdapter(dbHelper.getAll(), (v, id, position) -> startActivityForResult(new Intent(this, MemoActivity.class).putExtra("id", id).putExtra("position", position), REQ_MEMO)));
         binding.recycler.setLayoutManager(new LinearLayoutManager(this));
