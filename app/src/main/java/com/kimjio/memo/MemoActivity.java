@@ -30,7 +30,7 @@ public class MemoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.memo_activity);
-        dbHelper = new MemoDBHelper(this, MemoDBHelper.TABLE, null, 1);
+        dbHelper = MemoDBHelper.getInstance(this);
         setSupportActionBar(binding.appBarLayout.appBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
